@@ -42,7 +42,7 @@
 			this.find('td').dblclick(
 				function() {
 					if( $(this).children().length == 0 ) {
-						$(this).html('<input style="text" value="' + $(this).html() + '" />').css({padding:'1px'});
+						$(this).html('<input style="text" value="' + $(this).html() + '" />').css({padding:'2px'});
 						$(this).children('input').editTable('listenToMe');
 						$(this).children('input').focus();
 					}
@@ -86,14 +86,14 @@
 			 *	Register Listeners
 			 */
 			
-			this.keydown(
-				function(me) { listenTo(me)	}
+			this.change(
+				function(me) { listenTo(me); }
+			).keydown(
+				function(me) { listenTo(me); }
 			).focus(
-				function(me) { $(this).css('border-color', options.activeBorderColor); }
+				function(me) { listenTo(me); }
 			).blur(
-				function(me) { listenTo(me)	}
-			).change(
-				function(me) { listenTo(me) }
+				function(me) { listenTo(me); }
 			);
 			
 			
@@ -145,7 +145,7 @@
 				function destroyInput(val, target){
 					if(!val){ val = originalValue; }
 					if(!target){ target = origin.parent(); }
-					
+					console.log(target);
 					target.html( val ).css( {padding: originalPadding} );
 				}
 				
@@ -154,7 +154,7 @@
 				 *	Decision Tree
 				 */
 				 
-				console.log({type: me.type, origin: origin, isComplete: row.isComplete});
+				//console.log({type: me.type, origin: origin, isComplete: row.isComplete});
 				
 				switch (me.type){
 					case 'keydown':
@@ -167,8 +167,8 @@
 								if(row.isNew  && !row.isComplete){
 									var nextInput  = cellIndex  == rowCells.index( $('#new input:last').parent() ) ? $('#new input:first') : thisCell.next().children('input') ;
 									nextInput.focus();
+									origin.blur();
 								}
-								origin.blur();
 								break;
 								
 							case 27: // escape key
@@ -183,7 +183,8 @@
 						break;
 					
 					case 'change':
-						data[column]  = value;
+						data[column] = value;
+						console.log(data);
 						
 						if(row.isNew && row.isComplete){
 							$.post( "admin/n", data, function(response){
@@ -194,16 +195,16 @@
 								.attr( 'id', response )
 								.children().each(
 									function(){
-										destroyInput( $(this).children('input').val(), $(this).html );
+										destroyInput( $(this).children('input').val(), $(this) );
 									}
 								);
 								$().editTable('addEditRow');
 							});
 						} else if (!row.isNew) {
-							//data[column]  = value;
 							data['rowid'] = row.id;
 							
-							$.post( options.dbFunctionsBASE_URL + "u", data, function(){
+							$.post( "admin/u", data, function(){
+								console.log(this);
 								$(origin)
 								.animate({
 									borderColor: "#70DB70", 
