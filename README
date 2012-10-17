@@ -1,0 +1,41 @@
+##Useage:
+
+$('table').editTable();
+
+###Your markup must match this template, except in number of columns:
+
+<table>
+	<thead>
+		<tr>
+      <!-- The plugin uses th id's to know what column's to use to speak to your server -->
+      <!-- They could be the same column names used in your db -->
+			<th id="column1_name">Label</th>
+			<th id="column2_name">Label</th>
+			<th id="column3_name">Label</th>
+		</tr>
+	</thead>
+	<tbody>
+	  <!-- You must build existing rows server side -->
+		<?php foreach ($data as $row):?>
+    <!-- Like the <th> id's, the row id matches your database's row number -->
+		<tr id="<?php echo $row->id; ?>">
+		
+			<?php unset($row->id); ?>
+			
+			<?php foreach ($row as $cell): ?>
+				<td><?php echo $cell; ?></td>
+			<?php endforeach;?>
+			
+		</tr>
+		<?php endforeach;?>
+		
+	</tbody>
+</table>
+
+
+###Server Side uses these URI's:
+n: Create/add new row 
+U: Update existing cell
+d: remove/delete row (planned)
+
+Base URI must be set as option.
